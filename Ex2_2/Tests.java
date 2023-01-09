@@ -13,15 +13,6 @@ import static java.lang.Thread.sleep;
 
 public class Tests {
     public static final Logger logger = LoggerFactory.getLogger(Tests.class);
-    //TODO javadoc ex2_1 2
-    //TODO javadoc ex2_2 2
-    //TODO README.md ex2_1 2
-    //TODO organize classes 2
-    //TODO test ex2_1 2
-    //TODO test ex2_2 1
-    //TODO uml ex2_2 2
-    //TODO uml ex2_2 0
-
 
     //ways to submit task
     @Test
