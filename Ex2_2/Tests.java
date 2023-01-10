@@ -14,11 +14,12 @@ import static java.lang.Thread.sleep;
 public class Tests {
     public static final Logger logger = LoggerFactory.getLogger(Tests.class);
 
+
     //ways to submit task
     @Test
     public void testSubmit() {
         CustomExecutor customExecutor = new CustomExecutor();
-        //can create task with or with out priority
+        //can create task with or without priority
         Task<Integer> task1 = Task.createTask((() -> {
             return 1;
         }), TaskType.OTHER);
@@ -49,6 +50,7 @@ public class Tests {
         CustomExecutor customExecutor = new CustomExecutor();
         //after initiation every thing is zero and queue is empty
         logger.info(customExecutor::toString);
+        Assert.assertEquals(-1, customExecutor.getCurrentMax());
         for (int i = 0; i < 4; i++) {
             customExecutor.submit(Task.createTask((() -> {
                 sleep(10);
@@ -57,6 +59,7 @@ public class Tests {
         }
         //after submitting 4 task he preferred add to core Threads (=4) then queueing
         logger.info(customExecutor::toString);
+        Assert.assertEquals(-1, customExecutor.getCurrentMax());
 
 
         for (int i = 0; i < 100; i++) {
@@ -67,6 +70,7 @@ public class Tests {
         }
         //even after submit a lot task still the core is four because only if can't add to queue he will add thread
         logger.info(customExecutor::toString);
+        Assert.assertEquals(3, customExecutor.getCurrentMax());
 
         for (int i = 0; i < 100; i++) {
             customExecutor.submit(Task.createTask((() -> {
@@ -81,11 +85,12 @@ public class Tests {
         }
         //although the COMPUTATIONAL tasks come after they will go to head of queue
         logger.info(customExecutor::toString);
+        Assert.assertEquals(1, customExecutor.getCurrentMax());
 
         sleep(3000);
         //we can see after we let all task to complete the queue is empty again
         logger.info(customExecutor::toString);
-        sleep(3000);
+        Assert.assertEquals(-1, customExecutor.getCurrentMax());
 
 
     }
@@ -93,8 +98,6 @@ public class Tests {
     //test shutdown properties
     @Test
     public void shutdownn() throws InterruptedException {
-        //execute all task in queue
-        //finish all task in threads
         CustomExecutor customExecutor = new CustomExecutor();
         Task<Integer> task1 = Task.createTask((() -> {
             sleep(1000);
@@ -106,17 +109,19 @@ public class Tests {
         Assertions.assertThrows(RuntimeException.class, () -> {
             customExecutor.submit(task1);
         });
+
+        //finish all task in threads
         logger.info(customExecutor::toString);
         sleep(2000);
         logger.info(customExecutor::toString);
 
+        //execute all task in queue
         CustomExecutor customExecutor1 = new CustomExecutor();
-        Task<Integer> task2 = Task.createTask((() -> {
-            sleep(1000);
-            return 1;
-        }), TaskType.OTHER);
         for (int i = 0; i < 10; i++) {
-            customExecutor1.submit(task2);
+            customExecutor1.submit(Task.createTask((() -> {
+                sleep(1000);
+                return 1;
+            }), TaskType.OTHER));
         }
         customExecutor1.gracefullyTerminate();
         logger.info(customExecutor1::toString);
@@ -139,24 +144,19 @@ public class Tests {
         }, TaskType.COMPUTATIONAL);
 
         Future<Integer> sumTask = customExecutor.submit(task);
-
         //THROW timeout because didn't finish in given time 1 mils
         Assert.assertThrows(TimeoutException.class, () -> {
             sumTask.get(1, TimeUnit.MILLISECONDS);
         });
 
         Task<Integer> task2 = Task.createTask(() -> {
-            return 1/0;
+            return 1 / 0;
         }, TaskType.COMPUTATIONAL);
-
         Future<Integer> divzero = customExecutor.submit(task2);
         //THROW ExecutionException because can't to this task
         Assert.assertThrows(ExecutionException.class, () -> {
             divzero.get(1000, TimeUnit.MILLISECONDS);
         });
-
-
-
     }
 
     @Test

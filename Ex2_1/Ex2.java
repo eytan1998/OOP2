@@ -151,7 +151,7 @@ class Ex2 {
      * @return the number of lines in this file
      * @throws RuntimeException FileNotFoundException if path not good
      */
-    protected static int sumOfLinesInFile(String fileName) {
+    protected static int sumOfLinesInFile(String fileName) throws RuntimeException {
         int sum = 0;
         try {
             File myObj = new File(fileName);

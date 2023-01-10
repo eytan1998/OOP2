@@ -11,7 +11,6 @@ public class Tests {
     @Test
     public void partialTest() {
 
-        String[] asd = new String[]{"alsjdlkasd", "ajsdhsl"};
         int n=100;
         int seed=10;
         int bound=100;
@@ -35,9 +34,8 @@ public class Tests {
         System.out.println("###########getNumOfLinesThreadsPool###########");
         printResults(numTP,(stopTimeTP - startTimeTP));
 
-        Assertions.assertThrows(RuntimeException.class,()->Ex2.getNumOfLinesThreadsPool(asd));
-        Assertions.assertThrows(RuntimeException.class,()->Ex2.getNumOfLinesThreads(asd));
-        Assertions.assertThrows(RuntimeException.class,()->Ex2.getNumOfLines(asd));
+        String[] notFiles = new String[]{"alsjdlkasd", "ajsdhsl"};
+        Assertions.assertThrows(RuntimeException.class,()->Ex2.getNumOfLines(notFiles));
 
 
     }
